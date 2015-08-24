@@ -1,0 +1,35 @@
+<tool id="get_450K" name="Get TCGA 450K data" version="1.0">
+    <description>Download HM 450K data for a cancer type from TCGA</description>
+    <requirements>
+        <requirement type="R-module" version="1.00.0">ELMER</requirement>
+    </requirements>
+    <stdio>
+        <exit_code range="1:" />
+    </stdio>
+    <command interpreter="Rscript">
+        get_450K.R --disease=$disease
+    </command>
+    <inputs>
+        <param name="disease" size="4" type="text" value="LUAD" label="Cancer type from TCGA"/>
+    </inputs>
+    <outputs>
+        <data name="methylation" format="Rdata" label="${disease.value_label}_meth.rda" from_work_dir="./Data" />
+    </outputs>
+    <citations>
+        <citation type="doi">10.1186/s13059-015-0668-3</citation>
+    </citations>
+    <help>
+**What it does:**
+
+get450K is a function to download latest version of HM450K DNA methylation for all samples of
+certain cancer types from TCGA website.Download all DNA methylation from HM450K level 3 data for the specified disease.
+
+**Input:**
+
+disease A character specifies the disease to download in TCGA such as BLCA,LUAD,LUSC,BRCA etc
+
+**Output:**
+
+DNA methylation data in the form of Rdata
+    </help>
+</tool>
