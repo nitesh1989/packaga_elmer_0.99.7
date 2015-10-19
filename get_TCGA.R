@@ -1,4 +1,4 @@
-#!/usr/bin/Rscript
+#!/usr/bin/env RScript
 # Import some required libraries
 ## Setup R error handling to go to stderr
 library('getopt');

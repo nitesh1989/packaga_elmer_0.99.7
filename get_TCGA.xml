@@ -1,14 +1,25 @@
-<tool id="get_TCGA" name="Get TCGA data used for ELMER" version="1.0">
-    <description>Download DNA Methylation, Expression and Clinical data for all samples of certain cancer type from TCGA</description>
-    <requirements>
-        <requirement type="R-module" version="1.00.0">ELMER</requirement>
-    </requirements>
-    <stdio>
-        <exit_code range="1:" />
-    </stdio>
-    <command interpreter="Rscript">
-        get_TCGA.R --disease=$disease --Meth=$Meth --RNA=$RNA --Clinic=$Clinic --RNAtype=$RNAtype --Methfilter=$Methfilter
+<tool id="get_TCGA" name="Download TCGA data" version="1.0">
+    <description>DNA Methylation, Expression and Clinical data for all samples of certain cancer type from TCGA</description>
+     <macros>
+        <import>elmer_macros.xml</import>
+    </macros>
+    <expand macro="requirements" />
+    <command detect_errors="exit_code">
+        Rscript "${get_TCGA.R}" --disease=$disease --Meth=$Meth --RNA=$RNA --Clinic=$Clinic --RNAtype=$RNAtype --Methfilter=$Methfilter
     </command>
+    <configfiles>
+        <configfile name="get_TCGA"><![CDATA[
+## IF disease type NOT available, stop.
+if(is.null(disease)){
+   stop("The disease name should be from TCGA")
+}
+
+## Download all TCGA data
+getTCGA(disease, Meth=Meth,RNA=RNA,Clinic=Clinic,basedir = "./Data", RNAtype = RNAtype,
+     Methfilter = Methfilter)
+
+        ]]></configfile>
+    </configfiles>
     <inputs>
         <param name="disease" size="4" type="text" value="LUAD" label="Cancer type from TCGA"/>
         <param name="Meth" type="boolean" checked="false" truevalue="TRUE" falsevalue="FALSE" label="Get Methylation Data?" />
@@ -27,9 +38,7 @@
         <data name="expression" format="Rdata" label="${disease.value_label}_RNA.rda" from_work_dir="./Data" />
         <data name="clinical" format="Rdata" label="${disease.value_label}_clinic.rda" from_work_dir=".Data" />
     </outputs>
-    <citations>
-        <citation type="doi">10.1186/s13059-015-0668-3</citation>
-    </citations>
+    <expand macro="citations" />
     <help>
 **What it does:**
 

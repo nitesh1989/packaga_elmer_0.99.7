@@ -1,14 +1,26 @@
-<tool id="TCGA_pipe" name="ELMER analysis pipeline for TCGA data" version="1.0">
-    <description>Complete ELMER analysis for TCGA datasets</description>
-    <requirements>
-        <requirement type="R-module" version="1.00.0">ELMER</requirement>
-    </requirements>
-    <stdio>
-        <exit_code range="1:" />
-    </stdio>
-    <command interpreter="Rscript">
-        TCGA_pipe.R --disease=$disease --analysis=$analysis --diffdir=$diffdir
+<tool id="TCGA_pipe" name="Complete ELMER analysis pipeline" version="1.0">
+    <description>for a TCGA data</description>
+    <macros>
+        <import>elmer_macros.xml</import>
+    </macros>
+    <expand macro="requirements" />
+    <command detect_errors="exit_code">
+       Rscript TCGA_pipe.R --disease=$disease --analysis=$analysis --diffdir=$diffdir
     </command>
+    <configfiles>
+        <configfile name="TCGA_pipe.R"><![CDATA[
+#!/usr/bin/env RScript
+library(ELMER, quietly=TRUE, warn.conflicts=FALSE,verbose = FALSE)
+
+# IF disease type NOT available, stop.
+if(is.null(disease)){
+   stop("The disease name should be from TCGA")
+}
+
+TCGA.pipe(options$disease,wd="./Data",cores=detectCores()/2,permu.size=300,Pe=0.01,analysis = "all",diff.dir=options$diffdir,rm.chr=paste0("chr",c("X","Y")))
+
+        ]]></configfile>
+    </configfiles>
     <inputs>
         <param name="disease" size="4" type="text" value="LUAD" label="Cancer type from TCGA"/>
         <conditional name="analysis_select">
@@ -33,9 +45,7 @@
         <data name="expression" format="Rdata" label="${disease.value_label}_RNA.rda" from_work_dir="./Data" />
         <data name="clinical" format="Rdata" label="${disease.value_label}_clinic.rda" from_work_dir=".Data" />
     </outputs>
-    <citations>
-        <citation type="doi">10.1186/s13059-015-0668-3</citation>
-    </citations>
+    <expand macro="citations" />
     <help>
 **What it does:**
 

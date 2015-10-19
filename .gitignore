@@ -4,6 +4,7 @@ test_data/*
 
 # Compiled source #
 ###################
+.Rhistory
 *.com
 *.class
 *.dll
